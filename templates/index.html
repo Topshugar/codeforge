@@ -1,66 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width">
-<title>CodeForge - Your Free Replit Agent</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeForge - Replit Agent Clone</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{background:#0e0e10;color:white}</style>
+<style>
+body{background:#0a0a0f;color:white;font-family:Inter,system-ui}
+.log-line{animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </head>
-<body class="p-4 md:p-8">
-<div class="max-w-6xl mx-auto">
-<h1 class="text-3xl font-bold mb-2">⚡ CodeForge <span class="text-purple-400 text-lg">Your Free Replit Agent</span></h1>
-<div class="grid md:grid-cols-2 gap-6 mt-6">
-<div>
-<div class="bg-[#1a1a1e] p-4 rounded-xl border border-zinc-800">
-<textarea id="prompt" class="w-full h-32 bg-black p-3 rounded-lg text-white" placeholder="Build me a..."></textarea>
-<button id="gen" class="w-full mt-3 bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg font-bold">✨ Generate App</button>
-<p id="status" class="text-sm text-zinc-400 mt-2"></p>
+<body class="h-screen flex flex-col">
+<div class="h-14 border-b border-zinc-800 flex items-center px-4 justify-between bg-[#0f0f13]">
+<div class="flex items-center gap-3"><span class="text-xl">⚡</span><b>CodeForge</b><span class="text-xs bg-purple-600 px-2 py-1 rounded-full">REPLIT AGENT CLONE</span></div>
+<div class="flex gap-2"><button onclick="downloadAll()" class="bg-zinc-800 px-3 py-1.5 rounded-lg text-sm">⬇ Download</button></div>
 </div>
-<div id="files" class="mt-4 space-y-2"></div>
-</div>
-<div>
-<div class="bg-white rounded-xl overflow-hidden h-[600px]">
-<iframe id="preview" class="w-full h-full border-0"></iframe>
-</div>
-<div class="flex gap-2 mt-3">
-<button onclick="downloadZip()" class="bg-zinc-800 px-4 py-2 rounded">Download Code</button>
-<button onclick="document.getElementById('preview').srcdoc=document.getElementById('preview').srcdoc" class="bg-zinc-800 px-4 py-2 rounded">Refresh</button>
+<div class="flex-1 grid md:grid-cols-[380px_1fr] overflow-hidden">
+<div class="border-r border-zinc-800 flex flex-col bg-[#101014] overflow-hidden">
+<div class="p-4">
+<textarea id="prompt" class="w-full h-28 bg-black border border-zinc-800 p-3 rounded-xl text-sm" placeholder="Build me a... e.g. Instagram clone, Crypto dashboard, AI chat app..."></textarea>
+<button id="gen" class="w-full mt-3 bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-xl font-bold text-sm">✨ Generate / Edit</button>
+<div id="logs" class="mt-4 bg-black rounded-xl p-3 h-40 overflow-auto text-xs font-mono border border-zinc-800 space-y-1"></div>
+<div id="files" class="mt-3 space-y-1"></div>
+<div class="mt-3 text-[11px] text-zinc-500">Tip: After generation, type "make it dark mode" or "add login" and click Generate again to edit.</div>
 </div>
 </div>
+<div class="flex flex-col bg-[#0a0a0a]">
+<div class="h-8 bg-[#1a1a1e] flex items-center px-3 text-xs text-zinc-400 gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="w-3 h-3 rounded-full bg-yellow-500"></span><span class="w-3 h-3 rounded-full bg-green-500"></span><span class="ml-3" id="plan">Ready to build...</span></div>
+<iframe id="preview" class="flex-1 w-full bg-white"></iframe>
 </div>
 </div>
 <script>
-let generatedFiles = [];
-const genBtn = document.getElementById('gen');
-genBtn.onclick = async () => {
-  const prompt = document.getElementById('prompt').value;
-  if(!prompt) return alert('Type what to build');
-  genBtn.innerText = 'Building...'; 
-  document.getElementById('status').innerText='Calling Groq free API...';
-  const form = new FormData(); 
-  form.append('prompt', prompt);
-  try {
-    const res = await fetch('/generate', {method:'POST', body:form});
-    const data = await res.json();
-    generatedFiles = data.files || [];
-    document.getElementById('files').innerHTML = generatedFiles.map(f=>`<div class='bg-[#1a1a1e] p-2 rounded text-sm'>📄 ${f.name}</div>`).join('');
-    const index = generatedFiles.find(f=>f.name.includes('index.html')) || generatedFiles[0];
-    if(index) document.getElementById('preview').srcdoc = index.content;
-    document.getElementById('status').innerText='Done! Preview ready.';
-  } catch(e){ 
-    document.getElementById('status').innerText='Error: '+e.message 
-  }
-  genBtn.innerText='✨ Generate App';
+let files = [];
+const $ = s=>document.getElementById(s);
+function log(t){const d=document.createElement('div');d.className='log-line';d.innerHTML=t;$('logs').appendChild(d);$('logs').scrollTop=9999}
+function showFiles(){ $('files').innerHTML=files.map((f,i)=>`<button onclick="openFile(${i})" class="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-2 rounded-lg text-xs flex justify-between"><span>📄 ${f.name}</span><span class="text-zinc-500">${f.content.length}b</span></button>`).join('');}
+function openFile(i){const f=files[i];let blob=new Blob([f.content],{type:'text/html'});if(f.name.endsWith('.html')){$('preview').srcdoc=f.content;}}
+function buildPreview(){if(!files.length)return;let html=files.find(f=>f.name=='index.html')?.content||'';let css=files.find(f=>f.name=='style.css')?.content||'';let js=files.find(f=>f.name=='script.js')?.content||'';if(css&&!html.includes('style.css')){html=html.replace('</head>',`<style>${css}</style></head>`)}if(js&&!html.includes('script.js')){html=html.replace('</body>',`<script>${js}<\/script></body>`)}if(html)$('preview').srcdoc=html}
+$('gen').onclick=async()=>{
+  const p=$('prompt').value;if(!p)return alert('What to build?');
+  $('gen').innerText='Building...';$('logs').innerHTML='';log('⚡ CodeForge Agent started...');
+  log('🧠 Planning app structure...');await new Promise(r=>setTimeout(r,400));
+  log('📦 Creating files...');const form=new FormData();form.append('prompt',p);form.append('existing',JSON.stringify(files));
+  try{
+    const res=await fetch('/generate',{method:'POST',body:form});const data=await res.json();if(data.error)throw new Error(data.error);
+    if(data.plan){$('plan').innerText=data.plan;log('📝 Plan: '+data.plan)}
+    files=data.files||[];for(let f of files){log(`✓ Created ${f.name} (${f.content.length} bytes)`);await new Promise(r=>setTimeout(r,250))}
+    showFiles();buildPreview();log('🚀 Preview ready!');log('✅ Done - you can now edit with chat');
+  }catch(e){log('❌ Error: '+e.message)}
+  $('gen').innerText='✨ Generate / Edit';
 }
-function downloadZip(){
-  if(!generatedFiles.length) return;
-  let content = generatedFiles[0].content;
-  let blob = new Blob([content], {type:'text/html'});
-  let a = document.createElement('a'); 
-  a.href=URL.createObjectURL(blob); 
-  a.download='app.html'; 
-  a.click();
-}
+function downloadAll(){if(!files.length)return alert('No files');files.forEach(f=>{let b=new Blob([f.content],{type:'text/plain'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()})}
 </script>
 </body>
 </html>
