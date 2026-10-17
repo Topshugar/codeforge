@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width">
+<title>CodeForge - Your Free Replit Agent</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#0e0e10;color:white}</style>
+</head>
+<body class="p-4 md:p-8">
+<div class="max-w-6xl mx-auto">
+<h1 class="text-3xl font-bold mb-2">⚡ CodeForge <span class="text-purple-400 text-lg">Your Free Replit Agent</span></h1>
+<div class="grid md:grid-cols-2 gap-6 mt-6">
+<div>
+<div class="bg-[#1a1a1e] p-4 rounded-xl border border-zinc-800">
+<textarea id="prompt" class="w-full h-32 bg-black p-3 rounded-lg text-white" placeholder="Build me a..."></textarea>
+<button id="gen" class="w-full mt-3 bg-gradient-to-r from-purple-600 to-blue-500 py-3 rounded-lg font-bold">✨ Generate App</button>
+<p id="status" class="text-sm text-zinc-400 mt-2"></p>
+</div>
+<div id="files" class="mt-4 space-y-2"></div>
+</div>
+<div>
+<div class="bg-white rounded-xl overflow-hidden h-[600px]">
+<iframe id="preview" class="w-full h-full border-0"></iframe>
+</div>
+<div class="flex gap-2 mt-3">
+<button onclick="downloadZip()" class="bg-zinc-800 px-4 py-2 rounded">Download Code</button>
+<button onclick="document.getElementById('preview').srcdoc=document.getElementById('preview').srcdoc" class="bg-zinc-800 px-4 py-2 rounded">Refresh</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+let generatedFiles = [];
+const genBtn = document.getElementById('gen');
+genBtn.onclick = async () => {
+  const prompt = document.getElementById('prompt').value;
+  if(!prompt) return alert('Type what to build');
+  genBtn.innerText = 'Building...'; 
+  document.getElementById('status').innerText='Calling Groq free API...';
+  const form = new FormData(); 
+  form.append('prompt', prompt);
+  try {
+    const res = await fetch('/generate', {method:'POST', body:form});
+    const data = await res.json();
+    generatedFiles = data.files || [];
+    document.getElementById('files').innerHTML = generatedFiles.map(f=>`<div class='bg-[#1a1a1e] p-2 rounded text-sm'>📄 ${f.name}</div>`).join('');
+    const index = generatedFiles.find(f=>f.name.includes('index.html')) || generatedFiles[0];
+    if(index) document.getElementById('preview').srcdoc = index.content;
+    document.getElementById('status').innerText='Done! Preview ready.';
+  } catch(e){ 
+    document.getElementById('status').innerText='Error: '+e.message 
+  }
+  genBtn.innerText='✨ Generate App';
+}
+function downloadZip(){
+  if(!generatedFiles.length) return;
+  let content = generatedFiles[0].content;
+  let blob = new Blob([content], {type:'text/html'});
+  let a = document.createElement('a'); 
+  a.href=URL.createObjectURL(blob); 
+  a.download='app.html'; 
+  a.click();
+}
+</script>
+</body>
+</html>
