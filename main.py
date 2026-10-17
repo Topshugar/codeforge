@@ -13,27 +13,52 @@ def get_client():
         return None
     return Groq(api_key=key)
 
-SYSTEM_PROMPT = """You are CodeForge, a Replit Agent clone. User gives prompt like 'build todo app'. You must output ONLY valid JSON with files. Format: {"files": [{"name": "index.html", "content": "<full html>"}, {"name": "style.css", "content": ""}, {"name": "script.js", "content": ""}]} Rules: index.html must be FULL working standalone file with inline CSS/JS if possible Make it modern, beautiful, mobile responsive No explanation outside JSON Use Tailwind CDN if needed: https://cdn.tailwindcss.com"""
+SYSTEM_PROMPT = """You are CodeForge Agent, a Replit Agent clone.
+
+You build COMPLETE multi-file web apps.
+
+Output ONLY valid JSON:
+{
+  "plan": "short 1 line plan",
+  "files": [
+    {"name": "index.html", "content": "full file content"},
+    {"name": "style.css", "content": "full css"},
+    {"name": "script.js", "content": "full js"}
+  ]
+}
+
+Rules:
+- Always return 2-4 files minimum for real apps
+- index.html must link style.css and script.js
+- Make it BEAUTIFUL like Replit apps - modern, Tailwind CDN: https://cdn.tailwindcss.com
+- Fully working, no placeholders
+- Mobile responsive
+- No text outside JSON
+"""
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/generate")
-async def generate(prompt: str = Form(...)):
+async def generate(prompt: str = Form(...), existing: str = Form("")):
     try:
         client = get_client()
         if not client:
-            return JSONResponse({"error": "GROQ_API_KEY missing. Add it in Vercel Settings > Environment Variables"})
-        
+            return JSONResponse({"error": "GROQ_API_KEY missing in Vercel"})
+
+        user_msg = f"Build this: {prompt}"
+        if existing:
+            user_msg = f"Existing files: {existing}\n\nEdit request: {prompt}\n\nReturn FULL updated files."
+
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Build this: {prompt}. Output JSON only."}
+                {"role": "user", "content": user_msg + " JSON only."}
             ],
-            temperature=0.3,
-            max_tokens=8000
+            temperature=0.35,
+            max_tokens=9000
         )
         raw = completion.choices[0].message.content
         match = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -43,6 +68,6 @@ async def generate(prompt: str = Form(...)):
             data = json.loads(raw)
             return data
         except:
-            return {"files": [{"name": "index.html", "content": raw}]}
+            return {"plan": "Built single file", "files": [{"name": "index.html", "content": raw}]}
     except Exception as e:
         return JSONResponse({"error": str(e)})
