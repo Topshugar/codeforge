@@ -1,94 +1,146 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Owhiz Agent - Replit Style</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owhiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{height:100dvh;background:#0e1525;color:#c2c8cc;font-family:Inter,system-ui;display:flex;flex-direction:column;overflow:hidden}
-.top{height:44px;background:#0e1525;border-bottom:1px solid #2b3245;display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0}
-.top b{color:#fff} .top b span{color:#4e6cf6}
-.tabs-mobile{display:none;height:44px;background:#1c2333;border-top:1px solid #2b3245}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#8a919e;cursor:pointer;border-top:2px solid transparent}
-.tab.active{color:#fff;border-top-color:#4e6cf6;background:#0e1525}
+body{font-family:Inter,sans-serif;background:#0a0e14;color:#e6e8eb;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.top{height:56px;background:#0f141e;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
+.top-left{display:flex;align-items:center;gap:16px}
+.logo{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+.file-tab{background:#1a2233;padding:6px 12px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:6px;border:1px solid #233148}
+.top-right{display:flex;align-items:center;gap:10px}
+.btn-run{background:#1dbf73;color:white;border:none;padding:8px 20px;border-radius:10px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.icon-btn{width:36px;height:36px;background:#1a2233;border:1px solid #233148;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9ca3af}
 .main{flex:1;display:flex;overflow:hidden}
-.panel-chat{width:360px;min-width:300px;background:#0e1525;border-right:1px solid #2b3245;display:flex;flex-direction:column}
-.panel-code{flex:1;display:flex;flex-direction:column;background:#0e1525;min-width:300px;border-right:1px solid #2b3245}
-.panel-preview{flex:1;display:flex;flex-direction:column;background:#fff;min-width:300px}
-.p-head{height:36px;background:#1c2333;border-bottom:1px solid #2b3245;display:flex;align-items:center;padding:0 10px;font-size:12px;font-weight:600;color:#fff;justify-content:space-between;flex-shrink:0}
-#chatLog{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.msg{padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.5;max-width:92%;white-space:pre-wrap;word-break:break-word}
-.user{background:#4e6cf6;color:#fff;align-self:flex-end}
-.agent{background:#1c2333;border:1px solid #2b3245;align-self:flex-start;color:#c2c8cc}
-.chat-input{height:52px;display:flex;gap:6px;padding:6px;background:#1c2333;border-top:1px solid #2b3245;flex-shrink:0}
-#userInput{flex:1;background:#0e1525;border:1px solid #2b3245;border-radius:8px;color:#fff;padding:8px 12px;outline:none}
-#sendBtn{background:#4e6cf6;border:none;color:#fff;border-radius:8px;padding:0 14px;font-weight:700;cursor:pointer}
-#fileList{display:flex;gap:4px;padding:6px;background:#1c2333;border-bottom:1px solid #2b3245;overflow:auto;flex-shrink:0}
-.file{padding:4px 10px;background:#0e1525;border:1px solid #2b3245;border-radius:6px;font-size:11px;cursor:pointer;color:#8a919e;white-space:nowrap}
-.file.active{background:#4e6cf6;color:#fff;border-color:#4e6cf6}
-#editor{flex:1;background:#0e1525;color:#d4d4d4;border:none;outline:none;padding:12px;font-family:Consolas,monospace;font-size:13px;resize:none;line-height:1.6}
-#preview{flex:1;border:none;width:100%;background:#fff}
+.panel{flex:1;display:flex;flex-direction:column;background:#0f141e;border-right:1px solid #1e293b;overflow:hidden}
+.panel:last-child{border-right:none}
+.panel-head{height:44px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;font-size:13px;font-weight:600;flex-shrink:0}
+.ai-head{background:#121a28}
+.chat-area{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.msg{background:#1a2233;padding:12px 14px;border-radius:16px;font-size:13px;line-height:1.5;border:1px solid #233148}
+.msg.user{background:#1e2a44;align-self:flex-end;max-width:85%}
+.msg.ai{align-self:flex-start;max-width:92%}
+.chat-input-area{padding:12px;border-top:1px solid #1e293b;display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;background:#0a0e14;border:1px solid #233148;border-radius:12px;padding:11px 14px;color:white;font-size:13px;outline:none}
+.send{width:40px;height:40px;background:#2dd4bf;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#04201b;font-weight:700}
+.code-area{flex:1;background:#0b101a;overflow:auto;padding:12px;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.6;color:#cbd5e1}
+.code-line{display:flex;gap:12px}
+.ln{color:#475569;width:24px;text-align:right;flex-shrink:0;user-select:none}
+.preview-wrap{flex:1;background:white;overflow:auto}
+.preview-wrap iframe{width:100%;height:100%;border:none;background:white}
+.live-dot{width:8px;height:8px;background:#1dbf73;border-radius:50%;display:inline-block;margin-right:6px}
+.badge{font-size:11px;background:#1a2233;border:1px solid #233148;padding:2px 7px;border-radius:6px}
+.mobile-tabs{display:none;height:48px;background:#0f141e;border-top:1px solid #1e293b}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:white;border-bottom-color:#1dbf73;background:#151e2f}
 @media(max-width:900px){
 .main{flex-direction:column}
-.panel-chat,.panel-code,.panel-preview{width:100%;height:100%;display:none}
-.panel-chat.active,.panel-code.active,.panel-preview.active{display:flex}
-.tabs-mobile{display:flex}
+.panel{display:none}
+.panel.active{display:flex}
+.mobile-tabs{display:flex}
 }
-</style></head>
+</style>
+</head>
 <body>
-<div class="top"><b>Owhiz <span>Agent</span></b><span style="font-size:11px;color:#8a919e">Replit Layout</span></div>
+<div class="top">
+<div class="top-left">
+<div class="logo">✨ Owhiz</div>
+<div class="file-tab">📁 index.html</div>
+</div>
+<div class="top-right">
+<div class="icon-btn">◧</div>
+<div class="icon-btn">↗</div>
+<button class="btn-run">▶ Run</button>
+<div class="icon-btn">⚙</div>
+<div class="icon-btn" style="background:#14b8a6;color:white;border:none;font-weight:700">A</div>
+</div>
+</div>
+
 <div class="main">
-<div class="panel-chat active" id="pChat">
-<div class="p-head">💬 AI Builder</div>
-<div id="chatLog"><div class="msg agent">Hi! I'm Owhiz. Tell me what to build.
+<div class="panel active" id="p-ai">
+<div class="panel-head ai-head">
+<span>✨ Owhiz AI <span class="badge">AI</span></span>
+</div>
+<div class="chat-area" id="chat">
+<div class="msg user">Create a modern school website with navbar, hero section for Lincoln High, admissions, events, and contact section.</div>
+<div class="msg ai">Done! I've generated a responsive modern school website for Lincoln High. It includes a clean navbar, hero section with CTA, highlights for Academics, Sports, and Arts, plus Admissions and Contact sections. You can preview it on the right and edit the code in the middle.</div>
+<div class="msg user">Looks great — make the hero more bold and add an Apply Now button.</div>
+<div class="msg ai">Updated — added bold hero and Apply Now button. Preview is updated.</div>
+</div>
+<div class="chat-input-area">
+<input id="chatIn" class="chat-input" placeholder="Ask Owhiz to edit, add feature, or debug...">
+<button class="send" onclick="sendMsg()">➤</button>
+</div>
+</div>
 
-I'll ask questions, then build.
+<div class="panel" id="p-code">
+<div class="panel-head">
+<span style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block"></span> index.html</span>
+<span style="display:flex;gap:8px"><span class="icon-btn" style="width:26px;height:26px">⧉</span><span class="icon-btn" style="width:26px;height:26px">•••</span></span>
+</div>
+<div class="code-area" id="code">
+<div class="code-line"><span class="ln">1</span><span><span style="color:#7dd3fc">&lt;!DOCTYPE html&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span><span style="color:#7dd3fc">&lt;html lang="en"&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span><span style="color:#7dd3fc">&lt;head&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span>  <span style="color:#7dd3fc">&lt;meta charset="UTF-8"&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span>  <span style="color:#fbbf24">&lt;title&gt;Lincoln High School&lt;/title&gt;</span></span></div>
+<div class="code-line"><span class="ln">6</span><span>  <span style="color:#7dd3fc">&lt;style&gt;</span></span></div>
+<div class="code-line"><span class="ln">7</span><span>    body{margin:0;font-family:Inter;background:#0b1220;color:#e6efff}</span></div>
+<div class="code-line"><span class="ln">8</span><span>    .hero{padding:56px 24px;background:linear-gradient(120deg,#0b1b3a,#122a5a)}</span></div>
+<div class="code-line"><span class="ln">9</span><span>    .btn{background:#1dbf73;color:white;padding:10px 18px;border-radius:8px}</span></div>
+<div class="code-line"><span class="ln">10</span><span>  <span style="color:#7dd3fc">&lt;/style&gt;</span></span></div>
+<div class="code-line"><span class="ln">11</span><span><span style="color:#7dd3fc">&lt;/head&gt;</span></span></div>
+</div>
+</div>
 
-Try: "Build a school website with admissions page"</div></div>
-<div class="chat-input"><input id="userInput" placeholder="What to build?" onkeydown="if(event.key==='Enter')sendChat()"><button id="sendBtn" onclick="sendChat()">Send</button></div>
+<div class="panel" id="p-preview">
+<div class="panel-head">
+<span><span class="live-dot"></span>Preview • <span style="color:#1dbf73">Live</span></span>
+<span style="display:flex;gap:10px">↻ ⤢</span>
 </div>
-<div class="panel-code" id="pCode">
-<div class="p-head"><span id="curFile">No file</span><button onclick="doPreview()" style="background:#2b3245;border:none;color:#fff;padding:3px 8px;border-radius:4px;font-size:11px">Run ▶</button></div>
-<div id="fileList"></div>
-<textarea id="editor" placeholder="// Code will appear here... Edit and click Run"></textarea>
+<div class="preview-wrap">
+<iframe id="preview" srcdoc="
+<div style='font-family:Inter,sans-serif;padding:0;margin:0'>
+<div style='padding:14px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e7eb'><b>Lincoln High School</b><div style='display:flex;gap:12px;font-size:13px'><span>About</span><span>Academics</span><span>Admissions</span><span style='background:#0f172a;color:white;padding:6px 12px;border-radius:20px'>Apply Now</span></div></div>
+<div style='padding:40px 24px;background:#0f172a;color:white'><h1 style='font-size:36px;line-height:1.1;margin:0'>Empowering Students<br>for Tomorrow</h1><p style='color:#cbd5e1;margin-top:12px'>Preparing learners for college, career, and community through excellence in academics, arts, and athletics.</p><div style='margin-top:20px;display:flex;gap:10px'><span style='border:1px solid #334155;padding:8px 16px;border-radius:8px'>Learn More</span><span style='background:#14b8a6;padding:8px 16px;border-radius:8px;color:#04201b;font-weight:600'>Schedule Tour</span></div></div>
+<div style='display:flex;gap:12px;padding:20px;background:#f1f5f9'><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>📚</div><b>Academics</b><p style='font-size:12px;color:#64748b'>Rigorous curriculum & AP courses</p></div><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>🏆</div><b>Sports</b><p style='font-size:12px;color:#64748b'>Championship athletics programs</p></div><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>🎨</div><b>Arts & Culture</b><p style='font-size:12px;color:#64748b'>Music, theater, and visual arts</p></div></div>
 </div>
-<div class="panel-preview" id="pPreview">
-<div class="p-head" style="background:#f5f5f5;color:#111;border-bottom:1px solid #ddd">🔍 Preview <span style="font-weight:400;color:#666">Live</span></div>
-<iframe id="preview"></iframe>
+"></iframe>
 </div>
 </div>
-<div class="tabs-mobile">
-<div class="tab active" onclick="showTab('chat')">Chat</div>
-<div class="tab" onclick="showTab('code')">Code</div>
-<div class="tab" onclick="showTab('preview')">Preview</div>
 </div>
+
+<div class="mobile-tabs">
+<div class="tab active" onclick="switchTab('ai')">AI</div>
+<div class="tab" onclick="switchTab('code')">Code</div>
+<div class="tab" onclick="switchTab('preview')">Preview</div>
+</div>
+
 <script>
-let files=[],cur=0,history=[];
-function showTab(t){
-document.querySelectorAll('.panel-chat,.panel-code,.panel-preview').forEach(p=>p.classList.remove('active'));
+function switchTab(t){
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
 document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-if(t==='chat'){document.getElementById('pChat').classList.add('active');document.querySelectorAll('.tab')[0].classList.add('active')}
-if(t==='code'){document.getElementById('pCode').classList.add('active');document.querySelectorAll('.tab')[1].classList.add('active')}
-if(t==='preview'){document.getElementById('pPreview').classList.add('active');document.querySelectorAll('.tab')[2].classList.add('active')}
+document.getElementById('p-'+t).classList.add('active');
+document.querySelector(`.tab[onclick="switchTab('${t}')"]`).classList.add('active');
 }
-function addMsg(t,w){let d=document.createElement('div');d.className='msg '+w;d.textContent=t;document.getElementById('chatLog').appendChild(d);document.getElementById('chatLog').scrollTop=99999}
-async function sendChat(){
- let input=document.getElementById('userInput');let text=input.value.trim();if(!text)return;
- addMsg(text,'user');input.value='';history.push({role:'user',content:text});
- let r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history})});
- let d=await r.json(); addMsg(d.reply,'agent');history.push({role:'assistant',content:d.reply});
- if(d.reply.includes('[READY_TO_BUILD]')){generateCode(d.reply.split('[READY_TO_BUILD]')[1]||text)}
+function sendMsg(){
+let i=document.getElementById('chatIn');
+if(!i.value.trim())return;
+let c=document.getElementById('chat');
+let d=document.createElement('div');
+d.className='msg user';
+d.textContent=i.value;
+c.appendChild(d);
+i.value='';
+c.scrollTop=c.scrollHeight;
 }
-async function generateCode(p){
- addMsg('⚡ Building... switching to Code tab','agent');
- if(window.innerWidth<=900) showTab('code');
- let r=await fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p})});
- let d=await r.json(); if(d.error){addMsg('Error: '+d.error,'agent');return}
- files=d.files||[]; cur=0; renderList(); openFile(0); doPreview();
- addMsg('✅ Built! Check Preview tab.','agent');
- if(window.innerWidth<=900) setTimeout(()=>showTab('preview'),800);
-}
-function renderList(){document.getElementById('fileList').innerHTML=files.map((f,i)=>`<div class="file ${i===cur?'active':''}" onclick="openFile(${i})">${f.name}</div>`).join('')}
-function openFile(i){cur=i;document.getElementById('curFile').textContent=files[i].name;document.getElementById('editor').value=files[i].content;renderList()}
-function doPreview(){if(!files.length)return; let htmlFile=files.find(f=>f.name.includes('html'))||files[0]; document.getElementById('preview').srcdoc=htmlFile.content}
-document.getElementById('editor').addEventListener('input',e=>{if(files[cur]){files[cur].content=e.target.value; doPreview()}})
+document.getElementById('chatIn').addEventListener('keydown',e=>{
+if(e.key==='Enter')sendMsg();
+});
 </script>
-</body></html>
+</body>
+</html>
