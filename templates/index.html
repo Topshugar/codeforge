@@ -1,87 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CodeForge - Free Replit Agent</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Owhiz - Build anything with prompt</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{height:100vh;display:flex;flex-direction:column;background:#0e1525;color:white;font-family: 'Segoe UI', monospace;overflow:hidden}
-header{height:45px;background:#1c2333;display:flex;align-items:center;padding:0 15px;border-bottom:1px solid #2b3245}
-header b{color:#0079ff}
-.main{flex:1;display:flex;overflow:hidden}
-.files{width:200px;background:#1c2333;border-right:1px solid #2b3245;padding:10px;overflow-y:auto}
-.files div{padding:6px;cursor:pointer;border-radius:4px;margin-bottom:2px}
-.files div:hover,.files div.active{background:#2b3245}
-.editor{flex:1;display:flex;flex-direction:column;background:#0e1525}
-#codeEditor{flex:1;background:#0e1525;color:#d4d4d4;padding:15px;border:none;resize:none;outline:none;font-family:'Consolas',monospace;font-size:14px;white-space:pre;overflow:auto}
-.preview{width:40%;background:white;border-left:1px solid #2b3245;display:flex;flex-direction:column}
-.preview-header{height:35px;background:#f3f3f3;color:#333;display:flex;align-items:center;padding:0 10px;font-size:12px}
-#previewFrame{flex:1;border:none;width:100%;background:white}
-.prompt-bar{height:90px;background:#1c2333;border-top:1px solid #2b3245;display:flex;padding:10px;gap:10px}
-#promptInput{flex:1;background:#0e1525;color:white;border:1px solid #2b3245;border-radius:6px;padding:12px;resize:none;outline:none}
-#generateBtn{background:#0079ff;color:white;border:none;border-radius:6px;padding:0 25px;cursor:pointer;font-weight:bold}
-#generateBtn:disabled{opacity:0.5}
-@media(max-width:768px){.files{display:none}.preview{width:50%}.main{flex-direction:column}.preview{width:100%;height:40%}}
+:root{--bg:#0e0f13;--panel:#17181e;--border:#25262e;--blue:#5a6bff;--text:#e6e6e6}
+body{height:100dvh;width:100vw;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+.top{height:48px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.top b{font-size:16px} .top b span{color:var(--blue)}
+.workspace{flex:1;display:flex;overflow:hidden}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-title{padding:12px;font-size:11px;letter-spacing:1px;opacity:.6}
+.file{padding:8px 12px;font-size:13px;cursor:pointer;border-left:2px solid transparent}
+.file.active{background:#1f2029;border-left-color:var(--blue)} .file:hover{background:#1f2029}
+.code-area{flex:1.2;display:flex;flex-direction:column;min-width:0}
+.code-head{height:38px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;font-size:12px;justify-content:space-between}
+#editor{flex:1;background:#0e0f13;color:#d4d4d4;border:none;outline:none;padding:16px;font-family:'JetBrains Mono',Consolas,monospace;font-size:13.5px;line-height:1.6;resize:none;white-space:pre;overflow:auto;tab-size:2}
+.preview-area{flex:1.3;background:#fff;display:flex;flex-direction:column;min-width:0;border-left:1px solid var(--border)}
+.prev-head{height:38px;background:#f6f6f7;border-bottom:1px solid #e5e5e5;color:#111;display:flex;align-items:center;padding:0 12px;font-size:12px;gap:8px}
+#preview{flex:1;border:none;width:100%;background:white}
+.prompt{height:72px;background:var(--panel);border-top:1px solid var(--border);display:flex;gap:10px;padding:10px 12px;align-items:center}
+#promptInput{flex:1;height:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:white;padding:12px 14px;outline:none;font-size:14px;resize:none}
+#genBtn{background:var(--blue);color:white;border:none;border-radius:10px;padding:0 22px;height:44px;font-weight:600;cursor:pointer;white-space:nowrap}
+#genBtn:disabled{opacity:.5}
+@media(max-width:900px){.sidebar{display:none}.workspace{flex-direction:column}.preview-area{height:45%}}
 </style>
 </head>
 <body>
-<header><b>⚡ CodeForge</b> &nbsp; - Free Replit Agent - Build anything with prompt</header>
-
-<div class="main">
-  <div class="files" id="fileList"><div style="opacity:0.5">No files yet</div></div>
-  <div class="editor"><textarea id="codeEditor">// Your code will appear here
-// Prompt something like "build a flappy bird game"</textarea></div>
-  <div class="preview"><div class="preview-header">🔴 Live Preview</div><iframe id="previewFrame"></iframe></div>
+<div class="top"><b>Owhiz <span>Builder</span></b><div style="font-size:12px;opacity:.6">v1.0 • Free</div></div>
+<div class="workspace">
+  <div class="sidebar"><div class="side-title">EXPLORER</div><div id="fileList"></div></div>
+  <div class="code-area"><div class="code-head"><span id="currentFileName">No file</span><span style="opacity:.5">Editable • Live</span></div><textarea id="editor" spellcheck="false" placeholder="// Your generated code appears here. You can edit it directly."></textarea></div>
+  <div class="preview-area"><div class="prev-head"><div style="width:10px;height:10px;background:#ff5f57;border-radius:50%"></div><div style="width:10px;height:10px;background:#ffbd2e;border-radius:50%"></div><div style="width:10px;height:10px;background:#28ca42;border-radius:50%"></div><span style="margin-left:8px">Preview</span><button onclick="updatePreview()" style="margin-left:auto;border:1px solid #ddd;border-radius:6px;padding:4px 10px;background:white;cursor:pointer">↻ Refresh</button></div><iframe id="preview"></iframe></div>
 </div>
-
-<div class="prompt-bar">
-  <textarea id="promptInput" placeholder="Prompt: Build me a todo app, or a calculator, or a portfolio website..."></textarea>
-  <button id="generateBtn" onclick="generate()">Generate ⚡</button>
-</div>
-
+<div class="prompt"><textarea id="promptInput" placeholder="Describe what to build... e.g. Build a modern school website with admissions, courses, contact"></textarea><button id="genBtn" onclick="doGenerate()">Generate</button></div>
 <script>
-let files = [];
-let currentFile = 0;
-
-async function generate(){
-  const prompt = document.getElementById('promptInput').value;
-  if(!prompt) return;
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true; btn.innerText = 'Building...';
-  
-  try{
-    const res = await fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-    const data = await res.json();
-    files = data.files || [];
-    renderFiles();
-    if(files.length>0) openFile(0);
-    updatePreview();
-  }catch(e){alert(e)}
-  btn.disabled = false; btn.innerText = 'Generate ⚡';
+let files=[], cur=0;
+function doGenerate(){
+ const p=document.getElementById('promptInput').value.trim(); if(!p) return;
+ const btn=document.getElementById('genBtn'); btn.disabled=true; btn.textContent='Building...';
+ fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p})})
+ .then(r=>r.json()).then(d=>{
+   if(d.error && !d.files){alert(d.error); return}
+   files=d.files||[]; cur=0; renderFiles(); if(files[0]) openFile(0); updatePreview();
+ }).catch(e=>alert(e)).finally(()=>{btn.disabled=false; btn.textContent='Generate'});
 }
-
-function renderFiles(){
-  const list = document.getElementById('fileList');
-  list.innerHTML = files.map((f,i)=>`<div class="${i==currentFile?'active':''}" onclick="openFile(${i})">📄 ${f.name}</div>`).join('');
-}
-function openFile(i){
-  currentFile = i;
-  document.getElementById('codeEditor').value = files[i].content;
-  renderFiles();
-}
+function renderFiles(){document.getElementById('fileList').innerHTML=files.map((f,i)=>`<div class="file ${i===cur?'active':''}" onclick="openFile(${i})">${f.name}</div>`).join('')}
+function openFile(i){cur=i; document.getElementById('currentFileName').textContent=files[i].name; document.getElementById('editor').value=files[i].content; renderFiles()}
 function updatePreview(){
-  const htmlFile = files.find(f=>f.name.includes('html'));
-  if(htmlFile){
-    const css = files.find(f=>f.name.includes('css'))?.content || '';
-    const js = files.find(f=>f.name.includes('js'))?.content || '';
-    const full = htmlFile.content.replace('</head>',`<style>${css}</style></head>`).replace('</body>',`<script>${js}<\/script></body>`);
-    document.getElementById('previewFrame').srcdoc = full;
-  }
+ const html=files.find(f=>f.name.endsWith('.html'))?.content||''; const css=files.find(f=>f.name.endsWith('.css'))?.content||''; const js=files.find(f=>f.name.endsWith('.js'))?.content||'';
+ if(!html) return;
+ let out=html; if(css && !out.includes('<style>')) out=out.replace('</head>',`<style>${css}</style></head>`); if(js) out=out.replace('</body>',`<script>${js}<\/script></body>`);
+ document.getElementById('preview').srcdoc=out;
 }
-document.getElementById('codeEditor').addEventListener('input', (e)=>{
-  if(files[currentFile]) files[currentFile].content = e.target.value;
-  updatePreview();
-});
+document.getElementById('editor').addEventListener('input', e=>{ if(files[cur]){files[cur].content=e.target.value; updatePreview()}});
 </script>
 </body>
 </html>
