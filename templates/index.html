@@ -2,125 +2,57 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Replit</title>
+<title>CodeForge - Replit Agent Clone</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-*{font-family:Inter,sans-serif} .mono{font-family:"IBM Plex Mono",monospace}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#2a2a2f;border-radius:10px}
-</style>
+<style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@500;600&display=swap');*{font-family:Inter} .mono{font-family:JetBrains Mono}</style>
 </head>
-<body class="bg-[#0e0e10] text-white h-screen flex flex-col overflow-hidden">
-<!-- TOP BAR LIKE REPLIT -->
-<div class="h-[48px] border-b border-[#2a2a33] flex items-center px-3 justify-between bg-[#0e0e10]">
-<div class="flex items-center gap-3">
-<div class="w-7 h-7 bg-[#ff4d00] rounded-[6px] flex items-center justify-center font-bold text-[16px]">R</div>
-<span class="font-semibold text-[14px]">CodeForge</span>
-<span class="text-[11px] px-2 py-0.5 rounded-full bg-[#1e1e22] border border-[#2a2a33] text-zinc-400">Agent v2</span>
-</div>
-<div class="flex items-center gap-2">
-<button onclick="downloadAll()" class="mono text-[12px] bg-[#1e1e22] hover:bg-[#25252b] border border-[#2a2a33] px-3 py-1.5 rounded-[6px]">Export</button>
-<button class="mono text-[12px] bg-white text-black px-4 py-1.5 rounded-[6px] font-medium">Deploy</button>
-</div>
+<body class="bg-[#0e0e10] text-white h-screen flex flex-col">
+<div class="h-12 border-b border-[#232326] flex items-center justify-between px-4">
+<div class="flex items-center gap-2"><div class="w-6 h-6 bg-[#ff4400] rounded flex items-center justify-center font-bold">R</div><span class="font-semibold text-sm">CodeForge</span><span class="text-[10px] bg-[#1c1c1f] border border-[#2a2a2e] px-2 py-1 rounded-full text-zinc-400">BUILDS ANYTHING</span></div>
+<div class="text-[11px] mono text-zinc-500">Replit Agent Clone</div>
 </div>
 
 <div class="flex-1 flex overflow-hidden">
-<!-- LEFT: CHAT LIKE REPLIT AGENT -->
-<div class="w-[360px] border-r border-[#2a2a33] bg-[#111113] flex flex-col">
-<div class="p-4 border-b border-[#1e1e22]">
-<h2 class="text-[13px] font-semibold">Agent</h2>
-<p class="text-[11px] text-zinc-500 mt-1">Build apps by chatting. I'll plan, code, and preview.</p>
+<div class="w-[360px] bg-[#121214] border-r border-[#232326] flex flex-col">
+<div class="p-4 flex-1 overflow-auto" id="chat">
+<div class="bg-[#1a1a1e] border border-[#27272a] p-3 rounded-xl text-[13px]"><b>👋 I can build ANYTHING</b><br><span class="text-zinc-400 text-[12px]">Type like you type to me. Examples:<br>• trading calculator with fees & leverage<br>• Instagram clone<br>• Crypto dashboard<br>• Todo app with auth</span></div>
 </div>
-
-<div id="chat" class="flex-1 overflow-auto p-3 space-y-3">
-<div class="bg-[#18181b] border border-[#27272a] rounded-[10px] p-3">
-<div class="text-[12px] font-medium mb-1">👋 What do you want to build?</div>
-<div class="text-[11px] text-zinc-400 mono">Try: "Trading calculator with PnL, fees, and leverage slider" or "Crypto dashboard with live charts"</div>
+<div class="p-3 border-t border-[#232326]">
+<textarea id="p" class="w-full bg-[#1a1a1e] border border-[#2a2a2e] rounded-xl p-3 text-[13px] h-20 outline-none focus:border-[#ff4400]" placeholder="Ask to build anything..."></textarea>
+<button id="b" class="w-full mt-2 bg-white text-black py-2.5 rounded-xl font-semibold text-[13px]">▲ Build Anything</button>
+<div id="log" class="mt-2 mono text-[10px] text-zinc-500 h-16 overflow-auto bg-black rounded p-2 border border-[#1e1e20]"></div>
 </div>
 </div>
 
-<div class="p-3 border-t border-[#1e1e22] bg-[#111113]">
-<div class="bg-[#18181b] border border-[#2a2a33] rounded-[12px] p-2 flex flex-col focus-within:border-[#ff4d00]/50 transition">
-<textarea id="prompt" class="w-full bg-transparent outline-none text-[13px] resize-none h-[72px] p-2 placeholder:text-zinc-500" placeholder="Ask Agent to build or edit..."></textarea>
-<div class="flex justify-between items-center px-1 pt-1">
-<span class="text-[10px] text-zinc-500 mono">⏎ to send</span>
-<button id="gen" class="bg-white text-black text-[12px] font-semibold px-4 py-1.5 rounded-[8px] hover:bg-zinc-200">▲ Build</button>
-</div>
-</div>
-</div>
-</div>
-
-<!-- MIDDLE: FILES -->
-<div class="w-[240px] border-r border-[#2a2a33] bg-[#0e0e10] flex flex-col hidden md:flex">
-<div class="h-9 flex items-center px-3 text-[11px] font-semibold tracking-widest text-zinc-400 border-b border-[#1e1e22]">FILES</div>
-<div id="files" class="p-2 space-y-0.5 overflow-auto"></div>
-<div class="mt-auto border-t border-[#1e1e22] p-3">
-<div class="text-[11px] text-zinc-500 mono">Logs</div>
-<div id="logs" class="mt-2 bg-[#111113] border border-[#1e1e22] rounded-[8px] p-2 h-[160px] overflow-auto mono text-[10px] space-y-1"></div>
-</div>
-</div>
-
-<!-- RIGHT: PREVIEW LIKE REPLIT -->
-<div class="flex-1 flex flex-col bg-[#0a0a0b]">
-<div class="h-9 bg-[#111113] border-b border-[#1e1e22] flex items-center px-3 gap-2">
-<div class="flex gap-1.5"><div class="w-3 h-3 rounded-full bg-[#2a2a2f]"></div><div class="w-3 h-3 rounded-full bg-[#2a2a2f]"></div><div class="w-3 h-3 rounded-full bg-[#2a2a2f]"></div></div>
-<div class="ml-3 bg-[#1a1a1e] border border-[#252529] rounded-full px-3 py-1 text-[11px] mono text-zinc-400 flex items-center gap-2 flex-1 max-w-[420px]"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span id="url">preview.codeforge.local</span></div>
-<div id="plan" class="ml-auto text-[11px] mono text-zinc-500">Idle</div>
-</div>
-<iframe id="preview" class="flex-1 w-full bg-white"></iframe>
+<div class="flex-1 bg-[#09090b] flex flex-col">
+<div class="h-9 bg-[#121214] border-b border-[#232326] flex items-center px-3 gap-2 mono text-[11px] text-zinc-500"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span id="status">Ready - type what to build</span></div>
+<iframe id="prev" class="flex-1 w-full bg-white"></iframe>
 </div>
 </div>
 
 <script>
-let files=[];
-const $=id=>document.getElementById(id);
-function log(t, type=""){
-  const d=document.createElement('div'); d.className='flex gap-2';
-  d.innerHTML=`<span class="text-zinc-600">${new Date().toLocaleTimeString().slice(0,5)}</span><span class="${type}">${t}</span>`;
-  $('logs').appendChild(d); $('logs').scrollTop=9999;
+const $ = id=>document.getElementById(id);
+function addMsg(t, me=false){
+ const d=document.createElement('div'); d.className=me?'mt-3 ml-8 bg-white text-black p-3 rounded-xl text-[13px]':'mt-3 bg-[#1a1a1e] border border-[#27272a] p-3 rounded-xl text-[13px]';
+ d.innerHTML=t; $('chat').appendChild(d); $('chat').scrollTop=9999;
 }
-function addChat(role, text){
-  const div=document.createElement('div');
-  div.className= role==='user' ? 'bg-white text-black rounded-[10px] p-3 text-[13px] ml-8' : 'bg-[#18181b] border border-[#27272a] rounded-[10px] p-3 text-[13px]';
-  div.innerHTML=`<div class="text-[10px] mono opacity-60 mb-1">${role==='user'?'YOU':'AGENT'}</div>${text}`;
-  $('chat').appendChild(div); $('chat').scrollTop=9999;
+$('b').onclick=async()=>{
+ const pr=$('p').value.trim(); if(!pr)return;
+ addMsg(pr,true); $('p').value=''; $('b').innerText='Building...';
+ $('log').innerHTML=''; $('log').innerHTML+=`> Building: ${pr}<br>`; $('status').innerText='Agent building...';
+ const fd=new FormData(); fd.append('prompt',pr);
+ try{
+  const r=await fetch('/generate',{method:'POST',body:fd}); const d=await r.json();
+  if(d.error) throw new Error(d.error);
+  $('log').innerHTML+=`> Plan: ${d.plan}<br>> Files: ${d.files.length}<br>`;
+  const html=d.files[0].content; $('prev').srcdoc=html;
+  $('log').innerHTML+=`> ✅ Preview ready<br>`;
+  $('status').innerText=d.plan; addMsg(`✅ <b>Built!</b> ${d.plan}<br><br>Preview is live on right. Want edit? Just type: "make it dark mode" or "add chart"`);
+ }catch(e){
+  $('log').innerHTML+=`> ❌ ${e.message}<br>`; addMsg(`❌ ${e.message}`); $('status').innerText='Error';
+ }
+ $('b').innerText='▲ Build Anything';
 }
-function showFiles(){
-  $('files').innerHTML=files.map((f,i)=>`<div onclick="openFile(${i})" class="px-2 py-1.5 rounded-[6px] hover:bg-[#1a1a1e] cursor-pointer flex items-center gap-2 text-[12px]"><span class="text-[14px]">${f.name.endsWith('.html')?'◧':f.name.endsWith('.css')?'◫':'◨'}</span>${f.name}</div>`).join('');
-}
-function buildPreview(){
-  if(!files.length) return;
-  let html=files.find(f=>f.name==='index.html')?.content||'';
-  let css=files.find(f=>f.name==='style.css')?.content||'';
-  let js=files.find(f=>f.name==='script.js')?.content||'';
-  if(css && !html.includes('<style')) html=html.replace('</head>',`<style>${css}</style></head>`);
-  if(js) html=html.replace('</body>',`<script>${js}<\/script></body>`);
-  $('preview').srcdoc=html;
-}
-function openFile(i){
-  const f=files[i];
-  if(f.name.endsWith('.html')) buildPreview();
-  else {
-    $('preview').srcdoc=`<pre style="padding:20px;background:#0e0e10;color:#a1a1aa;font-family:monospace;white-space:pre-wrap;font-size:12px">${f.content.replace(/</g,'&lt;')}</pre>`;
-  }
-}
-$('gen').onclick=async()=>{
-  const p=$('prompt').value.trim(); if(!p) return;
-  addChat('user',p); $('prompt').value=''; $('gen').innerText='...';
-  $('logs').innerHTML=''; log('Agent started','text-zinc-300'); log('Analyzing prompt...'); await new Promise(r=>setTimeout(r,300));
-  log('Planning structure...'); $('plan').innerText='Planning...';
-  const form=new FormData(); form.append('prompt',p); form.append('existing',JSON.stringify(files));
-  try{
-    const res=await fetch('/generate',{method:'POST',body:form}); const data=await res.json();
-    if(data.error) throw new Error(data.error);
-    if(data.plan){$('plan').innerText=data.plan; addChat('agent',`🧠 <b>Plan:</b> ${data.plan}<br><br>Building ${data.files.length} files...`); log('Plan: '+data.plan,'text-purple-400');}
-    files=data.files||[];
-    for(let f of files){log(`✓ ${f.name} created`,'text-green-400'); await new Promise(r=>setTimeout(r,200));}
-    showFiles(); buildPreview(); log('Preview ready','text-white font-bold'); addChat('agent','✅ Done! Preview is live on the right. Want changes? Just tell me: "make it dark" "add profit chart"');
-  }catch(e){log('Error: '+e.message,'text-red-400'); addChat('agent','❌ '+e.message)}
-  $('gen').innerText='▲ Build';
-}
-function downloadAll(){if(!files.length)return alert('No files yet'); files.forEach(f=>{let b=new Blob([f.content],{type:'text/plain'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()})}
 </script>
 </body>
 </html>
