@@ -13,104 +13,58 @@ body{font-family:Inter,sans-serif;background:#0a0e14;color:#e6e8eb;height:100vh;
 .logo{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
 .file-tab{background:#1a2233;padding:6px 12px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:6px;border:1px solid #233148}
 .top-right{display:flex;align-items:center;gap:10px}
-.btn-run{background:#1dbf73;color:white;border:none;padding:8px 20px;border-radius:10px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.btn-run{background:#1dbf73;color:white;border:none;padding:8px 20px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer}
 .icon-btn{width:36px;height:36px;background:#1a2233;border:1px solid #233148;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9ca3af}
 .main{flex:1;display:flex;overflow:hidden}
 .panel{flex:1;display:flex;flex-direction:column;background:#0f141e;border-right:1px solid #1e293b;overflow:hidden}
 .panel:last-child{border-right:none}
 .panel-head{height:44px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;font-size:13px;font-weight:600;flex-shrink:0}
-.ai-head{background:#121a28}
 .chat-area{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#64748b;padding:40px}
+.empty h2{color:white;margin-bottom:8px;font-size:18px}
 .msg{background:#1a2233;padding:12px 14px;border-radius:16px;font-size:13px;line-height:1.5;border:1px solid #233148}
 .msg.user{background:#1e2a44;align-self:flex-end;max-width:85%}
-.msg.ai{align-self:flex-start;max-width:92%}
 .chat-input-area{padding:12px;border-top:1px solid #1e293b;display:flex;gap:8px;align-items:center}
 .chat-input{flex:1;background:#0a0e14;border:1px solid #233148;border-radius:12px;padding:11px 14px;color:white;font-size:13px;outline:none}
-.send{width:40px;height:40px;background:#2dd4bf;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#04201b;font-weight:700}
-.code-area{flex:1;background:#0b101a;overflow:auto;padding:12px;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.6;color:#cbd5e1}
-.code-line{display:flex;gap:12px}
-.ln{color:#475569;width:24px;text-align:right;flex-shrink:0;user-select:none}
-.preview-wrap{flex:1;background:white;overflow:auto}
-.preview-wrap iframe{width:100%;height:100%;border:none;background:white}
-.live-dot{width:8px;height:8px;background:#1dbf73;border-radius:50%;display:inline-block;margin-right:6px}
-.badge{font-size:11px;background:#1a2233;border:1px solid #233148;padding:2px 7px;border-radius:6px}
+.send{width:40px;height:40px;background:#2dd4bf;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.code-area{flex:1;background:#0b101a;overflow:auto;padding:24px;display:flex;align-items:center;justify-content:center;color:#475569;font-family:JetBrains Mono,monospace;font-size:13px}
+.preview-wrap{flex:1;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#94a3b8}
+.live-dot{width:8px;height:8px;background:#475569;border-radius:50%;display:inline-block;margin-right:6px}
 .mobile-tabs{display:none;height:48px;background:#0f141e;border-top:1px solid #1e293b}
 .tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;border-bottom:2px solid transparent}
 .tab.active{color:white;border-bottom-color:#1dbf73;background:#151e2f}
-@media(max-width:900px){
-.main{flex-direction:column}
-.panel{display:none}
-.panel.active{display:flex}
-.mobile-tabs{display:flex}
-}
+@media(max-width:900px){.main{flex-direction:column}.panel{display:none}.panel.active{display:flex}.mobile-tabs{display:flex}}
 </style>
 </head>
 <body>
 <div class="top">
-<div class="top-left">
-<div class="logo">✨ Owhiz</div>
-<div class="file-tab">📁 index.html</div>
-</div>
-<div class="top-right">
-<div class="icon-btn">◧</div>
-<div class="icon-btn">↗</div>
-<button class="btn-run">▶ Run</button>
-<div class="icon-btn">⚙</div>
-<div class="icon-btn" style="background:#14b8a6;color:white;border:none;font-weight:700">A</div>
-</div>
+<div class="top-left"><div class="logo">✨ Owhiz</div><div class="file-tab">📁 index.html</div></div>
+<div class="top-right"><button class="btn-run">▶ Run</button></div>
 </div>
 
 <div class="main">
 <div class="panel active" id="p-ai">
-<div class="panel-head ai-head">
-<span>✨ Owhiz AI <span class="badge">AI</span></span>
-</div>
+<div class="panel-head"><span>✨ Owhiz AI</span></div>
 <div class="chat-area" id="chat">
-<div class="msg user">Create a modern school website with navbar, hero section for Lincoln High, admissions, events, and contact section.</div>
-<div class="msg ai">Done! I've generated a responsive modern school website for Lincoln High. It includes a clean navbar, hero section with CTA, highlights for Academics, Sports, and Arts, plus Admissions and Contact sections. You can preview it on the right and edit the code in the middle.</div>
-<div class="msg user">Looks great — make the hero more bold and add an Apply Now button.</div>
-<div class="msg ai">Updated — added bold hero and Apply Now button. Preview is updated.</div>
+<div class="empty">
+<h2>What do you want to build?</h2>
+<p>Ask Owhiz to create a website, app, or landing page. Your code and preview will appear here.</p>
+</div>
 </div>
 <div class="chat-input-area">
-<input id="chatIn" class="chat-input" placeholder="Ask Owhiz to edit, add feature, or debug...">
+<input id="chatIn" class="chat-input" placeholder="Ask Owhiz to build something...">
 <button class="send" onclick="sendMsg()">➤</button>
 </div>
 </div>
 
 <div class="panel" id="p-code">
-<div class="panel-head">
-<span style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block"></span> index.html</span>
-<span style="display:flex;gap:8px"><span class="icon-btn" style="width:26px;height:26px">⧉</span><span class="icon-btn" style="width:26px;height:26px">•••</span></span>
-</div>
-<div class="code-area" id="code">
-<div class="code-line"><span class="ln">1</span><span><span style="color:#7dd3fc">&lt;!DOCTYPE html&gt;</span></span></div>
-<div class="code-line"><span class="ln">2</span><span><span style="color:#7dd3fc">&lt;html lang="en"&gt;</span></span></div>
-<div class="code-line"><span class="ln">3</span><span><span style="color:#7dd3fc">&lt;head&gt;</span></span></div>
-<div class="code-line"><span class="ln">4</span><span>  <span style="color:#7dd3fc">&lt;meta charset="UTF-8"&gt;</span></span></div>
-<div class="code-line"><span class="ln">5</span><span>  <span style="color:#fbbf24">&lt;title&gt;Lincoln High School&lt;/title&gt;</span></span></div>
-<div class="code-line"><span class="ln">6</span><span>  <span style="color:#7dd3fc">&lt;style&gt;</span></span></div>
-<div class="code-line"><span class="ln">7</span><span>    body{margin:0;font-family:Inter;background:#0b1220;color:#e6efff}</span></div>
-<div class="code-line"><span class="ln">8</span><span>    .hero{padding:56px 24px;background:linear-gradient(120deg,#0b1b3a,#122a5a)}</span></div>
-<div class="code-line"><span class="ln">9</span><span>    .btn{background:#1dbf73;color:white;padding:10px 18px;border-radius:8px}</span></div>
-<div class="code-line"><span class="ln">10</span><span>  <span style="color:#7dd3fc">&lt;/style&gt;</span></span></div>
-<div class="code-line"><span class="ln">11</span><span><span style="color:#7dd3fc">&lt;/head&gt;</span></span></div>
-</div>
+<div class="panel-head"><span>index.html</span></div>
+<div class="code-area">// Your code will appear here</div>
 </div>
 
 <div class="panel" id="p-preview">
-<div class="panel-head">
-<span><span class="live-dot"></span>Preview • <span style="color:#1dbf73">Live</span></span>
-<span style="display:flex;gap:10px">↻ ⤢</span>
-</div>
-<div class="preview-wrap">
-<iframe id="preview" srcdoc="
-<div style='font-family:Inter,sans-serif;padding:0;margin:0'>
-<div style='padding:14px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e7eb'><b>Lincoln High School</b><div style='display:flex;gap:12px;font-size:13px'><span>About</span><span>Academics</span><span>Admissions</span><span style='background:#0f172a;color:white;padding:6px 12px;border-radius:20px'>Apply Now</span></div></div>
-<div style='padding:40px 24px;background:#0f172a;color:white'><h1 style='font-size:36px;line-height:1.1;margin:0'>Empowering Students<br>for Tomorrow</h1><p style='color:#cbd5e1;margin-top:12px'>Preparing learners for college, career, and community through excellence in academics, arts, and athletics.</p><div style='margin-top:20px;display:flex;gap:10px'><span style='border:1px solid #334155;padding:8px 16px;border-radius:8px'>Learn More</span><span style='background:#14b8a6;padding:8px 16px;border-radius:8px;color:#04201b;font-weight:600'>Schedule Tour</span></div></div>
-<div style='display:flex;gap:12px;padding:20px;background:#f1f5f9'><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>📚</div><b>Academics</b><p style='font-size:12px;color:#64748b'>Rigorous curriculum & AP courses</p></div><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>🏆</div><b>Sports</b><p style='font-size:12px;color:#64748b'>Championship athletics programs</p></div><div style='flex:1;background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.05)'><div>🎨</div><b>Arts & Culture</b><p style='font-size:12px;color:#64748b'>Music, theater, and visual arts</p></div></div>
-</div>
-"></iframe>
-</div>
+<div class="panel-head"><span><span class="live-dot"></span>Preview</span></div>
+<div class="preview-wrap">No preview yet — build something first</div>
 </div>
 </div>
 
@@ -131,16 +85,13 @@ function sendMsg(){
 let i=document.getElementById('chatIn');
 if(!i.value.trim())return;
 let c=document.getElementById('chat');
+c.innerHTML='';
 let d=document.createElement('div');
 d.className='msg user';
 d.textContent=i.value;
 c.appendChild(d);
 i.value='';
-c.scrollTop=c.scrollHeight;
 }
-document.getElementById('chatIn').addEventListener('keydown',e=>{
-if(e.key==='Enter')sendMsg();
-});
 </script>
 </body>
 </html>
