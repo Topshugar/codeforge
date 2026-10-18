@@ -1,58 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CodeForge - Replit Agent Clone</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@500;600&display=swap');*{font-family:Inter} .mono{font-family:JetBrains Mono}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeForge - Free Replit Agent</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{height:100vh;display:flex;flex-direction:column;background:#0e1525;color:white;font-family: 'Segoe UI', monospace;overflow:hidden}
+header{height:45px;background:#1c2333;display:flex;align-items:center;padding:0 15px;border-bottom:1px solid #2b3245}
+header b{color:#0079ff}
+.main{flex:1;display:flex;overflow:hidden}
+.files{width:200px;background:#1c2333;border-right:1px solid #2b3245;padding:10px;overflow-y:auto}
+.files div{padding:6px;cursor:pointer;border-radius:4px;margin-bottom:2px}
+.files div:hover,.files div.active{background:#2b3245}
+.editor{flex:1;display:flex;flex-direction:column;background:#0e1525}
+#codeEditor{flex:1;background:#0e1525;color:#d4d4d4;padding:15px;border:none;resize:none;outline:none;font-family:'Consolas',monospace;font-size:14px;white-space:pre;overflow:auto}
+.preview{width:40%;background:white;border-left:1px solid #2b3245;display:flex;flex-direction:column}
+.preview-header{height:35px;background:#f3f3f3;color:#333;display:flex;align-items:center;padding:0 10px;font-size:12px}
+#previewFrame{flex:1;border:none;width:100%;background:white}
+.prompt-bar{height:90px;background:#1c2333;border-top:1px solid #2b3245;display:flex;padding:10px;gap:10px}
+#promptInput{flex:1;background:#0e1525;color:white;border:1px solid #2b3245;border-radius:6px;padding:12px;resize:none;outline:none}
+#generateBtn{background:#0079ff;color:white;border:none;border-radius:6px;padding:0 25px;cursor:pointer;font-weight:bold}
+#generateBtn:disabled{opacity:0.5}
+@media(max-width:768px){.files{display:none}.preview{width:50%}.main{flex-direction:column}.preview{width:100%;height:40%}}
+</style>
 </head>
-<body class="bg-[#0e0e10] text-white h-screen flex flex-col">
-<div class="h-12 border-b border-[#232326] flex items-center justify-between px-4">
-<div class="flex items-center gap-2"><div class="w-6 h-6 bg-[#ff4400] rounded flex items-center justify-center font-bold">R</div><span class="font-semibold text-sm">CodeForge</span><span class="text-[10px] bg-[#1c1c1f] border border-[#2a2a2e] px-2 py-1 rounded-full text-zinc-400">BUILDS ANYTHING</span></div>
-<div class="text-[11px] mono text-zinc-500">Replit Agent Clone</div>
+<body>
+<header><b>⚡ CodeForge</b> &nbsp; - Free Replit Agent - Build anything with prompt</header>
+
+<div class="main">
+  <div class="files" id="fileList"><div style="opacity:0.5">No files yet</div></div>
+  <div class="editor"><textarea id="codeEditor">// Your code will appear here
+// Prompt something like "build a flappy bird game"</textarea></div>
+  <div class="preview"><div class="preview-header">🔴 Live Preview</div><iframe id="previewFrame"></iframe></div>
 </div>
 
-<div class="flex-1 flex overflow-hidden">
-<div class="w-[360px] bg-[#121214] border-r border-[#232326] flex flex-col">
-<div class="p-4 flex-1 overflow-auto" id="chat">
-<div class="bg-[#1a1a1e] border border-[#27272a] p-3 rounded-xl text-[13px]"><b>👋 I can build ANYTHING</b><br><span class="text-zinc-400 text-[12px]">Type like you type to me. Examples:<br>• trading calculator with fees & leverage<br>• Instagram clone<br>• Crypto dashboard<br>• Todo app with auth</span></div>
-</div>
-<div class="p-3 border-t border-[#232326]">
-<textarea id="p" class="w-full bg-[#1a1a1e] border border-[#2a2a2e] rounded-xl p-3 text-[13px] h-20 outline-none focus:border-[#ff4400]" placeholder="Ask to build anything..."></textarea>
-<button id="b" class="w-full mt-2 bg-white text-black py-2.5 rounded-xl font-semibold text-[13px]">▲ Build Anything</button>
-<div id="log" class="mt-2 mono text-[10px] text-zinc-500 h-16 overflow-auto bg-black rounded p-2 border border-[#1e1e20]"></div>
-</div>
-</div>
-
-<div class="flex-1 bg-[#09090b] flex flex-col">
-<div class="h-9 bg-[#121214] border-b border-[#232326] flex items-center px-3 gap-2 mono text-[11px] text-zinc-500"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span id="status">Ready - type what to build</span></div>
-<iframe id="prev" class="flex-1 w-full bg-white"></iframe>
-</div>
+<div class="prompt-bar">
+  <textarea id="promptInput" placeholder="Prompt: Build me a todo app, or a calculator, or a portfolio website..."></textarea>
+  <button id="generateBtn" onclick="generate()">Generate ⚡</button>
 </div>
 
 <script>
-const $ = id=>document.getElementById(id);
-function addMsg(t, me=false){
- const d=document.createElement('div'); d.className=me?'mt-3 ml-8 bg-white text-black p-3 rounded-xl text-[13px]':'mt-3 bg-[#1a1a1e] border border-[#27272a] p-3 rounded-xl text-[13px]';
- d.innerHTML=t; $('chat').appendChild(d); $('chat').scrollTop=9999;
+let files = [];
+let currentFile = 0;
+
+async function generate(){
+  const prompt = document.getElementById('promptInput').value;
+  if(!prompt) return;
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true; btn.innerText = 'Building...';
+  
+  try{
+    const res = await fetch('/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data = await res.json();
+    files = data.files || [];
+    renderFiles();
+    if(files.length>0) openFile(0);
+    updatePreview();
+  }catch(e){alert(e)}
+  btn.disabled = false; btn.innerText = 'Generate ⚡';
 }
-$('b').onclick=async()=>{
- const pr=$('p').value.trim(); if(!pr)return;
- addMsg(pr,true); $('p').value=''; $('b').innerText='Building...';
- $('log').innerHTML=''; $('log').innerHTML+=`> Building: ${pr}<br>`; $('status').innerText='Agent building...';
- const fd=new FormData(); fd.append('prompt',pr);
- try{
-  const r=await fetch('/generate',{method:'POST',body:fd}); const d=await r.json();
-  if(d.error) throw new Error(d.error);
-  $('log').innerHTML+=`> Plan: ${d.plan}<br>> Files: ${d.files.length}<br>`;
-  const html=d.files[0].content; $('prev').srcdoc=html;
-  $('log').innerHTML+=`> ✅ Preview ready<br>`;
-  $('status').innerText=d.plan; addMsg(`✅ <b>Built!</b> ${d.plan}<br><br>Preview is live on right. Want edit? Just type: "make it dark mode" or "add chart"`);
- }catch(e){
-  $('log').innerHTML+=`> ❌ ${e.message}<br>`; addMsg(`❌ ${e.message}`); $('status').innerText='Error';
- }
- $('b').innerText='▲ Build Anything';
+
+function renderFiles(){
+  const list = document.getElementById('fileList');
+  list.innerHTML = files.map((f,i)=>`<div class="${i==currentFile?'active':''}" onclick="openFile(${i})">📄 ${f.name}</div>`).join('');
 }
+function openFile(i){
+  currentFile = i;
+  document.getElementById('codeEditor').value = files[i].content;
+  renderFiles();
+}
+function updatePreview(){
+  const htmlFile = files.find(f=>f.name.includes('html'));
+  if(htmlFile){
+    const css = files.find(f=>f.name.includes('css'))?.content || '';
+    const js = files.find(f=>f.name.includes('js'))?.content || '';
+    const full = htmlFile.content.replace('</head>',`<style>${css}</style></head>`).replace('</body>',`<script>${js}<\/script></body>`);
+    document.getElementById('previewFrame').srcdoc = full;
+  }
+}
+document.getElementById('codeEditor').addEventListener('input', (e)=>{
+  if(files[currentFile]) files[currentFile].content = e.target.value;
+  updatePreview();
+});
 </script>
 </body>
 </html>
