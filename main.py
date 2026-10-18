@@ -1,50 +1,32 @@
-from flask import Flask, render_template, request, jsonify
-import os, json, requests
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+import os
+import requests
 
-app = Flask(__name__)
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-MODEL = "openai/gpt-oss-120b"  # New working model on Groq
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/chat', methods=['POST'])
-def chat():
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
-        return jsonify({"reply": "GROQ_API_KEY not set"}), 200
-    data = request.get_json()
-    user_msg = data.get('message','')
-    history = data.get('history',[])
-    system = """You are Owhiz Agent. If prompt vague, ask 2-3 questions and suggest features. If clear, end with [READY_TO_BUILD] + refined prompt. Concise."""
-    messages = [{"role":"system","content":system}]
-    for h in history[-6:]:
-        messages.append(h)
-    messages.append({"role":"user","content":user_msg})
-    try:
-        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}","Content-Type":"application/json"},
-            json={"model": MODEL,"messages":messages,"temperature":0.7,"max_tokens":1000},timeout=30)
-        j = r.json()
-        if "error" in j:
-            return jsonify({"reply": f"Groq Error: {j['error'].get('message','')}"}),200
-        return jsonify({"reply": j["choices"][0]["message"]["content"]})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {e}"}),200
-
-@app.route('/generate', methods=['POST'])
-def generate():
-    api_key = os.environ.get("GROQ_API_KEY")
-    prompt = request.get_json().get('prompt','')
-    system = """Return ONLY JSON: {"files":[{"name":"index.html","content":"FULL CODE"}]} Modern responsive."""
-    try:
-        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}","Content-Type":"application/json"},
-            json={"model": MODEL,"messages":[{"role":"system","content":system},{"role":"user","content":prompt}],"temperature":0.3,"max_tokens":7000,"response_format":{"type":"json_object"}},timeout=90)
-        j = r.json()
-        if "error" in j:
-            return jsonify({"error": j["error"].get("message")}),500
-        return jsonify(json.loads(j["choices"][0]["message"]["content"]))
-    except Exception as e:
-        return jsonify({"error": str(e)}),500
+@app.post("/generate")
+async def generate(prompt: str = Form(...)):
+    groq_key = os.getenv("GROQ_API_KEY")
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {groq_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "system", "content": "You generate complete single-file HTML apps with inline CSS and JS. Return only HTML."},
+            {"role": "user", "content": prompt}
+        ]
+    }
+    r = requests.post(url, headers=headers, json=payload)
+    result = r.json()
+    code = result["choices"][0]["message"]["content"]
+    return {"code": code, "message": f"Built: {prompt}"}
