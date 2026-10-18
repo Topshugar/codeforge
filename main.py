@@ -1,52 +1,47 @@
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
-import os, json, re, requests
+from flask import Flask, render_template, request, jsonify
+from groq import Groq
+import os
+import json
 
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+app = Flask(__name__)
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-@app.post("/generate")
-async def generate(prompt: str = Form(...)):
-    key = os.getenv("GROQ_API_KEY")
-    if not key:
-        return JSONResponse({"error": "Missing GROQ_API_KEY in Vercel env vars. Add it in Settings > Environment Variables"})
-    
+@app.route('/generate', methods=['POST'])
+def generate():
+    prompt = request.get_json().get('prompt', '')
+
+    system_prompt = """
+You are CodeForge Agent - a FREE Replit Agent clone.
+User will ask to build anything: website, game, todo app, calculator, etc.
+You must respond in VALID JSON only, with this format:
+{
+  "files": [
+    {"name": "index.html", "content": "<html>..."},
+    {"name": "style.css", "content": "..."},
+    {"name": "script.js", "content": "..."}
+  ],
+  "explanation": "short explanation"
+}
+Generate complete working code. No placeholders. Make it runnable.
+If user asks for Python, return main.py. If website, return html/css/js.
+"""
+
     try:
-        system_prompt = """You are CodeForge Agent. You build ANY web app user asks for.
-Output ONLY valid JSON: {"plan": "short 1-line plan", "files": [{"name": "index.html", "content": "COMPLETE HTML with Tailwind CDN https://cdn.tailwindcss.com, fully working, beautiful, mobile responsive"}]}
-Build ANYTHING: trading calculators, Instagram clones, dashboards, shops, landing pages. No text outside JSON."""
-
-        resp = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.35,
-                "max_tokens": 8000
-            },
-            timeout=60
+        res = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt}
+            ],
+            model="llama-3.3-70b-versatile",
+            temperature=0.3,
+            max_tokens=6000,
+            response_format={"type": "json_object"}
         )
-
-        if resp.status_code != 200:
-            return JSONResponse({"error": f"Groq API {resp.status_code}: {resp.text[:500]}"})
-
-        raw = resp.json()["choices"][0]["message"]["content"]
-        # extract json
-        match = re.search(r'\{.*\}', raw, re.DOTALL)
-        if match:
-            raw = match.group(0)
-        
-        data = json.loads(raw)
-        return data
-
+        data = json.loads(res.choices[0].message.content)
+        return jsonify(data)
     except Exception as e:
-        return JSONResponse({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
