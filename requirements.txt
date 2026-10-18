@@ -1,5 +1,2 @@
-fastapi
-uvicorn
-jinja2
-requests
-python-multipart
+Flask==2.3.3
+groq==0.11.0
