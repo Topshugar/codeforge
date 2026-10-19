@@ -79,20 +79,17 @@ async def generate(
 ):
     if not prompt.strip():
         raise HTTPException(400, "Prompt cannot be empty")
-    
     try:
         if is_edit.lower() == "true" and current_code and len(current_code.strip()) > 100:
             result = await edit_app_code(current_code, prompt)
-            return JSONResponse({"message": f"✏️ Edited: {prompt[:70]}", "code": result, "is_edit": True})
+            return JSONResponse({"message": f"Edited: {prompt[:70]}", "code": result, "is_edit": True})
         else:
             result = await generate_app_code(prompt)
-            return JSONResponse({"message": f"⚡ Built: {prompt[:70]}... App ready!", "code": result, "is_edit": False})
+            return JSONResponse({"message": f"Built: {prompt[:70]}... App ready!", "code": result, "is_edit": False})
     except ValueError as ve:
-        # Missing API key
-        return JSONResponse({"message": str(ve), "code": f"<html><body style='font-family:Inter,sans-serif;padding:40px'><h2 style='color:#ef4444'>Config Error</h2><p>{ve}</p><p>Set GROQ_API_KEY in Vercel > Settings > Environment Variables</p></body></html>"}, status_code=500)
+        return JSONResponse({"message": str(ve), "code": f"<html><body style='font-family:Inter,sans-serif;padding:40px'><h2 style='color:#ef4444'>Config Error</h2><p>{ve}</p></body></html>"}, status_code=500)
     except Exception as e:
-        print(f"[CodeForge Error] {e}")
-        return JSONResponse({"message": f"Generation failed: {str(e)}", "code": f"<html><body style='padding:40px;font-family:sans-serif'><h2>Build Failed</h2><p>{str(e)}</p><p style='color:#64748b'>Try a simpler prompt or check Groq rate limits</p></body></html>"}, status_code=500)
+        return JSONResponse({"message": f"Generation failed: {str(e)}", "code": f"<html><body style='padding:40px;font-family:sans-serif'><h2>Build Failed</h2><p>{str(e)}</p></body></html>"}, status_code=500)
 
 @app.post("/projects/save")
 async def save_proj(req: SaveProjectRequest, current_user = Depends(get_current_user_required)):
@@ -123,4 +120,4 @@ async def health():
         "groq_key_set": bool(os.getenv("GROQ_API_KEY")),
         "jwt_set": bool(os.getenv("JWT_SECRET")),
         "model": "llama-3.3-70b-versatile"
-    }
+}
