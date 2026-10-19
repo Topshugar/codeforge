@@ -3,99 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owhiz - Build Anything</title>
+<title>Owhiz v2 - Build Anything + Save</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter,sans-serif;background:#0a0e14;color:#e6e8eb;height:100vh;display:flex;overflow:hidden}
-.left{width:360px;background:#0f141e;border-right:1px solid #1e293b;display:flex;flex-direction:column;flex-shrink:0}
-.logo{height:56px;padding:0 18px;display:flex;align-items:center;font-size:20px;font-weight:700;border-bottom:1px solid #1e293b}
-.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.left{width:390px;background:#0f141e;border-right:1px solid #1e293b;display:flex;flex-direction:column;flex-shrink:0}
+.logo{height:56px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e293b;font-size:18px;font-weight:700}
+.logo b{color:#1dbf73}
+.auth{padding:12px 16px;border-bottom:1px solid #1e293b;display:flex;gap:8px;align-items:center}
+.auth input{flex:1;background:#0a0e14;border:1px solid #233148;border-radius:8px;padding:8px 10px;color:white;font-size:12px;outline:none}
+.auth button{background:#1dbf73;border:none;color:white;padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600}
+.auth .user{font-size:12px;color:#94a3b8}
+.tabs{display:flex;border-bottom:1px solid #1e293b}
+.tab{flex:1;padding:10px;text-align:center;font-size:12px;cursor:pointer;color:#64748b;font-weight:600}
+.tab.active{color:white;border-bottom:2px solid #1dbf73}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.projects{flex:1;overflow-y:auto;padding:12px;display:none;flex-direction:column;gap:8px}
+.projects.show{display:flex}
+.proj-item{background:#1a2233;border:1px solid #233148;padding:10px 12px;border-radius:10px;cursor:pointer}
+.proj-item:hover{border-color:#1dbf73}
+.proj-item h4{font-size:13px;color:white;margin-bottom:2px}
+.proj-item p{font-size:11px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#64748b;padding:20px}
-.empty h2{color:white;font-size:18px;margin-bottom:8px}
-.empty p{font-size:13px;line-height:1.5}
+.empty h2{color:white;font-size:19px;margin-bottom:8px}
 .suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center}
-.sug{border:1px solid #233148;background:#1a2233;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;color:#94a3b8}
-.msg{padding:12px 14px;border-radius:16px;font-size:13px;line-height:1.5}
+.sug{border:1px solid #233148;background:#1a2233;padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;color:#94a3b8}
+.sug:hover{border-color:#1dbf73;color:white}
+.msg{padding:11px 13px;border-radius:14px;font-size:13px;line-height:1.5;animation:slide .25s}
+@keyframes slide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg.user{background:#1e2a44;align-self:flex-end;max-width:90%;border-bottom-right-radius:4px}
 .msg.ai{background:#1a2233;border:1px solid #233148}
-.input-wrap{padding:14px;border-top:1px solid #1e293b;display:flex;gap:8px}
+.input-wrap{padding:12px;border-top:1px solid #1e293b;display:flex;gap:8px;align-items:center}
 .input-wrap input{flex:1;background:#0a0e14;border:1px solid #233148;border-radius:12px;padding:12px 14px;color:white;outline:none;font-size:13px}
-.input-wrap button{width:44px;height:44px;background:#1dbf73;border:none;border-radius:12px;cursor:pointer;font-weight:700;color:white}
-.right{flex:1;background:#f8fafc;display:flex;flex-direction:column}
+.input-wrap input:focus{border-color:#1dbf73}
+.input-wrap button{width:42px;height:42px;background:#1dbf73;border:none;border-radius:12px;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center}
+.edit-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:#94a3b8;margin-right:4px;cursor:pointer}
+.edit-toggle input{accent-color:#1dbf73}
+.right{flex:1;background:#f8fafc;display:flex;flex-direction:column;min-width:0}
 .right-head{height:56px;background:white;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#0f172a;font-size:13px;font-weight:600}
+.right-actions{display:flex;gap:8px}
+.right-actions button{background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;font-size:11px;cursor:pointer}
+.right-actions button.primary{background:#0f172a;color:white;border-color:#0f172a}
 .preview{flex:1;background:white;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .preview-empty{color:#94a3b8;text-align:center;padding:40px}
 .preview-empty h3{color:#0f172a;margin-bottom:6px}
 iframe{width:100%;height:100%;border:none;background:white}
-@media(max-width:850px){
-body{flex-direction:column}
-.left{width:100%;height:55%;order:2}
-.right{height:45%;order:1}
-}
+@media(max-width:900px){body{flex-direction:column}.left{width:100%;height:60%;order:2}.right{height:40%;order:1}}
 </style>
 </head>
 <body>
 <div class="left">
-<div class="logo">✨ Owhiz</div>
+<div class="logo"><div>✨ <b>Owhiz</b> v2</div><div style="font-size:10px;color:#64748b;font-weight:400">EDIT + SAVE</div></div>
+<div class="auth" id="auth">
+<input id="email" placeholder="email">
+<input id="password" type="password" placeholder="password">
+<button onclick="handleAuth()" id="authBtn">Login / Signup</button>
+<div id="userInfo" style="display:none"><span class="user" id="userEmail"></span> <button onclick="logout()" style="background:transparent;color:#64748b;border:1px solid #233148;margin-left:8px">Logout</button></div>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="showTab('chat')">Chat</div>
+<div class="tab" onclick="showTab('projects')">My Projects</div>
+</div>
 <div class="chat" id="chat">
 <div class="empty" id="empty">
 <h2>What do you want to build?</h2>
-<p>Describe your app, website, or tool. Owhiz builds it instantly.</p>
+<p>Build, edit, save. Groq Llama 3.3 free.</p>
 <div class="suggestions">
-<span class="sug" onclick="quick('Build a school website')">School website</span>
-<span class="sug" onclick="quick('Build a food delivery app')">Food delivery</span>
-<span class="sug" onclick="quick('Build an AI chatbot dashboard')">AI dashboard</span>
+<span class="sug" onclick="quick('Build a modern school website with admissions, courses, contact')">School website</span>
+<span class="sug" onclick="quick('Build a food delivery app with menu, cart, checkout')">Food delivery</span>
+<span class="sug" onclick="quick('Build an AI dashboard with charts')">AI dashboard</span>
+<span class="sug" onclick="quick('Build a SaaS landing page with pricing')">SaaS landing</span>
 </div>
 </div>
+</div>
+<div class="projects" id="projectsList">
+<div class="empty"><p>Login to see saved projects</p></div>
 </div>
 <div class="input-wrap">
-<input id="prompt" placeholder="Ask Owhiz to build something..." onkeydown="if(event.key==='Enter')build()">
+<label class="edit-toggle"><input type="checkbox" id="editMode"> Edit mode</label>
+<input id="prompt" placeholder="Ask to build or edit..." onkeydown="if(event.key==='Enter')build()">
 <button onclick="build()">➤</button>
 </div>
 </div>
-
 <div class="right">
 <div class="right-head">
-<span>● Preview</span>
-<span style="color:#64748b;font-weight:400">outcome</span>
-</div>
-<div class="preview" id="preview">
-<div class="preview-empty">
-<h3>Your app will appear here</h3>
-<p>Start chatting on the left</p>
+<span>● Live Preview</span>
+<div class="right-actions">
+<button onclick="downloadCode()">Download</button>
+<button onclick="saveCurrent()" class="primary">Save Project</button>
+<button onclick="openNewTab()">New Tab</button>
 </div>
 </div>
+<div class="preview" id="preview"><div class="preview-empty"><h3>Your app appears here</h3><p>Tip: Turn on Edit mode to modify existing app</p></div></div>
 </div>
-
 <script>
+let lastCode='', lastPrompt='', token=localStorage.getItem('owhiz_token'), user=null;
+function init(){
+ if(token){ fetch('/auth/me',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()).then(d=>{ if(d.email){ setLogged(d); loadProjects(); } }); }
+}
+function setLogged(u){ user=u; document.getElementById('email').style.display='none'; document.getElementById('password').style.display='none'; document.getElementById('authBtn').style.display='none'; document.getElementById('userInfo').style.display='flex'; document.getElementById('userEmail').textContent=u.email; }
+function logout(){ localStorage.removeItem('owhiz_token'); location.reload(); }
+async function handleAuth(){
+ let email=document.getElementById('email').value.trim();
+ let pw=document.getElementById('password').value.trim();
+ if(!email||!pw){ alert('Enter email & password'); return; }
+ let res=await fetch('/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+ let data=await res.json();
+ if(res.ok){ localStorage.setItem('owhiz_token',data.token); setLogged(data.user); loadProjects(); }
+ else {
+  let res2=await fetch('/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+  let d2=await res2.json();
+  if(res2.ok){
+    let login=await fetch('/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    let ld=await login.json();
+    localStorage.setItem('owhiz_token',ld.token); setLogged(ld.user); loadProjects();
+  } else alert(d2.detail||'Auth failed');
+ }
+}
+function showTab(t){
+ document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+ if(t==='chat'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('chat').style.display='flex'; document.getElementById('projectsList').classList.remove('show'); }
+ else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('chat').style.display='none'; document.getElementById('projectsList').classList.add('show'); loadProjects(); }
+}
 function quick(t){document.getElementById('prompt').value=t;build();}
 async function build(){
-let input=document.getElementById('prompt');
-let prompt=input.value.trim();
-if(!prompt)return;
-let chat=document.getElementById('chat');
-document.getElementById('empty')?.remove();
-let u=document.createElement('div');u.className='msg user';u.textContent=prompt;chat.appendChild(u);
-input.value='';
-let a=document.createElement('div');a.className='msg ai';a.textContent='Building...';chat.appendChild(a);
-chat.scrollTop=chat.scrollHeight;
-let preview=document.getElementById('preview');
-preview.innerHTML='<div class="preview-empty">Building your app...</div>';
-try{
-let form=new FormData();form.append('prompt',prompt);
-let res=await fetch('/generate',{method:'POST',body:form});
-let data=await res.json();
-a.textContent=data.message || 'Done! Your app is ready.';
-let iframe=document.createElement('iframe');
-preview.innerHTML='';
-preview.appendChild(iframe);
-iframe.srcdoc=data.code;
-}catch(e){
-a.textContent='Error building. Try again.';
-preview.innerHTML='<div class="preview-empty">Failed to build</div>';
+ let input=document.getElementById('prompt');
+ let prompt=input.value.trim();
+ if(!prompt)return;
+ let isEdit=document.getElementById('editMode').checked && lastCode;
+ let chat=document.getElementById('chat');
+ document.getElementById('empty')?.remove();
+ let u=document.createElement('div');u.className='msg user';u.textContent=(isEdit?'[EDIT] ':'')+prompt;chat.appendChild(u);
+ input.value='';
+ let a=document.createElement('div');a.className='msg ai';a.textContent=isEdit?'✏️ Editing your app...':'⚡ Building with Llama 3.3...';chat.appendChild(a);
+ chat.scrollTop=chat.scrollHeight;
+ let preview=document.getElementById('preview');
+ preview.innerHTML='<div class="preview-empty"><h3>'+(isEdit?'Editing...':'Building...')+'</h3><p>Groq is fast — 3-8s</p></div>';
+ try{
+  let form=new FormData();form.append('prompt',prompt);form.append('is_edit',isEdit?'true':'false'); if(isEdit) form.append('current_code',lastCode);
+  let res=await fetch('/generate',{method:'POST',body:form});
+  let data=await res.json();
+  if(!res.ok) throw new Error(data.message);
+  a.textContent=data.message;
+  lastCode=data.code; lastPrompt=isEdit?lastPrompt:prompt;
+  let iframe=document.createElement('iframe');
+  preview.innerHTML=''; preview.appendChild(iframe); iframe.srcdoc=data.code;
+  chat.scrollTop=chat.scrollHeight;
+ }catch(e){ a.textContent='❌ '+e.message; preview.innerHTML='<div class="preview-empty">Failed: '+e.message+'</div>'; }
 }
+function downloadCode(){ if(!lastCode){alert('No code');return} let blob=new Blob([lastCode],{type:'text/html'}); let url=URL.createObjectURL(blob); let a=document.createElement('a');a.href=url;a.download='owhiz-app.html';a.click(); }
+function openNewTab(){ if(!lastCode){alert('No code');return} let w=window.open(); w.document.write(lastCode); }
+async function saveCurrent(){
+ if(!token){alert('Login first to save');return}
+ if(!lastCode){alert('No app to save');return}
+ let title=prompt('Project title?', lastPrompt.slice(0,40)||'My App');
+ if(!title)return;
+ let res=await fetch('/projects/save',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({title,prompt:lastPrompt,code:lastCode})});
+ if(res.ok){ alert('Saved!'); loadProjects(); showTab('projects'); } else alert('Save failed - login again');
 }
+async function loadProjects(){
+ if(!token){ document.getElementById('projectsList').innerHTML='<div class="empty"><p>Login to see projects</p></div>'; return; }
+ let res=await fetch('/projects/list',{headers:{'Authorization':'Bearer '+token}});
+ if(!res.ok){ document.getElementById('projectsList').innerHTML='<div class="empty"><p>Failed to load</p></div>'; return; }
+ let list=await res.json();
+ if(list.length===0){ document.getElementById('projectsList').innerHTML='<div class="empty"><p>No projects yet. Build something and save!</p></div>'; return; }
+ let html=''; list.forEach(p=>{
+  html+=`<div class="proj-item" onclick="loadProject('${p.id}')"><h4>${p.title}</h4><p>${p.prompt.slice(0,80)}</p><div style="margin-top:6px;display:flex;gap:6px"><button onclick="event.stopPropagation();deleteProj('${p.id}')" style="font-size:10px;background:#1e293b;border:none;color:#94a3b8;padding:4px 8px;border-radius:6px;cursor:pointer">Delete</button></div></div>`;
+ });
+ document.getElementById('projectsList').innerHTML=html;
+}
+async function loadProject(id){
+ let res=await fetch('/projects/'+id,{headers:{'Authorization':'Bearer '+token}});
+ let p=await res.json();
+ lastCode=p.code; lastPrompt=p.prompt;
+ let preview=document.getElementById('preview');
+ let iframe=document.createElement('iframe'); preview.innerHTML=''; preview.appendChild(iframe); iframe.srcdoc=p.code;
+ showTab('chat');
+ let chat=document.getElementById('chat'); let msg=document.createElement('div'); msg.className='msg ai'; msg.textContent='Loaded project: '+p.title; chat.appendChild(msg);
+}
+async function deleteProj(id){
+ if(!confirm('Delete?'))return;
+ await fetch('/projects/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
+ loadProjects();
+}
+init();
 </script>
 </body>
-</html>
+                                          </html>
